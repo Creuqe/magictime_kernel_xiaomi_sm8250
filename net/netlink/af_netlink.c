@@ -160,7 +160,7 @@ static inline u32 netlink_group_mask(u32 group)
 static struct sk_buff *netlink_to_full_skb(const struct sk_buff *skb,
 					   gfp_t gfp_mask)
 {
-	unsigned int len = skb->len;
+	unsigned int len = skb_end_offset(skb);
 	struct sk_buff *new;
 
 	new = alloc_skb(len, gfp_mask);
@@ -374,7 +374,7 @@ static void netlink_skb_destructor(struct sk_buff *skb)
 	if (is_vmalloc_addr(skb->head)) {
 		if (!skb->cloned ||
 		    !atomic_dec_return(&(skb_shinfo(skb)->dataref)))
-			vfree_atomic(skb->head);
+			vfree(skb->head);
 
 		skb->head = NULL;
 	}
